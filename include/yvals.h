@@ -1,4 +1,4 @@
-/* yvals.h values header -- Turbo C++ version */
+/* yvals.h values header -- MMURTL version */
 #define _YVALS
 		/* errno properties */
 #define _EDOM	33

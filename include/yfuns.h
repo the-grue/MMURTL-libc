@@ -1,4 +1,4 @@
-/* yfuns.h functions header -- Turbo C++ version */
+/* yfuns.h functions header -- MMURTL version */
 #ifndef _YFUNS
 #define _YFUNS
 		/* process control functions */

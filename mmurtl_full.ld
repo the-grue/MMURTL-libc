@@ -41,4 +41,5 @@ SECTIONS
 	LONG(0x00000000);
     }
     _heap = ALIGN(4);
+    /DISCARD/ : { *(.note.GNU-stack) *(.comment) *(.note.gnu.property) }
 }

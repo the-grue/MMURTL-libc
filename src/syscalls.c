@@ -13,7 +13,7 @@
 #define ERCNOTAFILE	202
 #define ERCDUPNAME	226
 
-extern _heap;
+extern char * _heap;
 
 /*static int *pagebreak = 0xFFFFFFFF;*/
 static void *pagebreak = (char *)&_heap;
@@ -89,7 +89,7 @@ int open(const char *name, int flags, ...)
 
 	if(flags & O_CREAT)
 	{
-		erc = CreateFile(name, fnamelen, 0);	
+		erc = CreateFile((char *) name, fnamelen, 0);	
 
 		if(erc == ERCNOTAFILE)
 		{
@@ -105,7 +105,7 @@ int open(const char *name, int flags, ...)
 			}
 			if(flags & O_TRUNC)
 			{
-				erc = OpenFile(name, fnamelen, 1, 1, &pdHandleRet);
+				erc = OpenFile((char *) name, fnamelen, 1, 1, &pdHandleRet);
 				if(erc != ERCOK)
 				{
 					errno = EINVAL;
@@ -117,7 +117,7 @@ int open(const char *name, int flags, ...)
 					errno = EINVAL;
 					return -1;
 				}
-				erc = CreateFile(name, fnamelen, 0);
+				erc = CreateFile((char *) name, fnamelen, 0);
 				if(erc != ERCOK)
 				{
 					errno = EINVAL;
@@ -130,7 +130,7 @@ int open(const char *name, int flags, ...)
 
 	/* Now open the file if we got to here */
 
-	erc = OpenFile(name, fnamelen, ((flags & 2) >> 1), 1, &pdHandleRet);
+	erc = OpenFile((char *) name, fnamelen, ((flags & 2) >> 1), 1, &pdHandleRet);
 	if(erc != ERCOK)
 	{
 		errno = EINVAL;
@@ -243,7 +243,7 @@ int write(int file, char *ptr, int len)
 	if(file == 1)
 		file = 2;
 
-	erc = WriteBytes(file, ptr, len, &pdBytesRet);
+	erc = WriteBytes(file, ptr, len, pdBytesRet);
 
 	if(erc)
 	{
@@ -251,7 +251,7 @@ int write(int file, char *ptr, int len)
 		return -1;
 	}
 	else
-		return pdBytesRet;
+		return *pdBytesRet;
 }
 
 /* int link(char *old, char *new); */
@@ -309,7 +309,7 @@ caddr_t sbrk(int incr)
 	/* See if we can satisfy the current request
 	 * out of memory already allocated */
 
-	if(((char *)pagebreak + incr) < maxcuralloc)	
+	if(((char *)pagebreak + incr) < (char *)(maxcuralloc))
 	{
 		pagebreak = ((char*) pagebreak) + incr;	
 		return ptr;
@@ -327,7 +327,8 @@ caddr_t sbrk(int incr)
 	if(erc)
 	{
 		errno = ENOMEM;
-		return -1;
+		ptr=(char *) -1;
+		return ptr;
 	}	
 	else
 	{
